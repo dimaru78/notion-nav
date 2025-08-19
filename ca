@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Christmas Avenue – Nav</title>
+<style>
+  :root{
+    /* Pink-Branding (an dein Widget angelehnt) */
+    --bg:transparent;
+    --fg:#2a2030;
+    --muted:#6c5a66;
+    --bar:#fdeef5;         /* Nav-Hintergrund */
+    --pill:#ffffff;        /* Buttons */
+    --accent:#c2366f;      /* Pink-Akzent */
+    --shadow:0 10px 28px rgba(194,54,111,.25); /* kräftiger Pink-Schatten */
+  }
+  body.dark{
+    --fg:#f7eef7; --muted:#d7c1cc;
+    --bar:#2b1f28; --pill:#3a2a36; --accent:#ff7aa8;
+    --shadow:0 12px 32px rgba(0,0,0,.5);
+  }
+
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,Arial,sans-serif}
+  .wrap{max-width:1100px;margin:0 auto;padding:12px}
+
+  /* NAV BAR */
+  .nav{
+    display:flex; align-items:center; gap:12px;
+    background:var(--bar);
+    padding:12px; border-radius:16px; box-shadow:var(--shadow);
+  }
+  .brand{display:flex; align-items:center; gap:10px; font-weight:900; letter-spacing:.2px}
+  .brand .logo{font-size:22px}
+  .links{display:flex; gap:8px; flex-wrap:wrap}
+  .link{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--pill); border-radius:999px; padding:10px 14px;
+    font-size:14px; color:var(--fg); text-decoration:none;
+    box-shadow:0 4px 10px rgba(0,0,0,.08);
+    transition:transform .12s ease, box-shadow .12s ease, background .12s ease, outline-color .12s ease;
+    outline:2px solid transparent;
+  }
+  .link:hover{transform:translateY(-1px); box-shadow:0 6px 14px rgba(0,0,0,.12)}
+  .link:active{transform:translateY(0); box-shadow:0 2px 6px rgba(0,0,0,.12)}
+  .link.active{outline-color:var(--accent)}
+
+  .spacer{flex:1}
+
+  .social{display:flex; gap:10px}
+  .iconbtn{
+    display:inline-grid; place-items:center; width:40px; height:40px;
+    background:var(--pill); border-radius:999px; text-decoration:none; color:var(--fg);
+    box-shadow:0 4px 10px rgba(0,0,0,.08);
+    transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+    font-size:18px;
+  }
+  .iconbtn:hover{transform:translateY(-1px); box-shadow:0 6px 14px rgba(0,0,0,.12)}
+  .iconbtn:active{transform:translateY(0); box-shadow:0 2px 6px rgba(0,0,0,.12)}
+
+  .mode{
+    margin-left:8px; padding:8px 12px; width:auto; font-size:14px;
+    border:0; cursor:pointer;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width:760px){
+    .nav{flex-wrap:wrap; gap:10px}
+    .spacer{flex-basis:100%; height:0}
+    .social{margin-left:auto}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav" aria-label="Hauptnavigation">
+    <div class="brand">
+      <span class="logo">🎄</span>
+      <span id="brandText">Christmas Avenue</span>
+    </div>
+
+    <div class="links" id="linkBar"><!-- per JS --></div>
+
+    <div class="spacer"></div>
+
+    <div class="social" id="socialBar"><!-- per JS --></div>
+    <a id="modeBtn" class="iconbtn mode" role="button" aria-label="Dark/Light umschalten">🌙</a>
+  </nav>
+</div>
+
+<script>
+  /* ===== KONFIG ===== */
+  const BRAND = { text: "Christmas Avenue", logo: "🎄" };
+
+  // Platzhalter-Seiten: Label + URL (deine Zielseiten eintragen)
+  const LINKS = [
+    { label:"Home",       url:"https://christmas-avenue.berlin/", icon:"🏠", active:true },
+    { label:"Programm",   url:"#programm", icon:"🎤" },
+    { label:"Aussteller", url:"#aussteller", icon:"🛍️" },
+    { label:"Drinks",     url:"#drinks", icon:"🍷" },
+    { label:"Anfahrt",    url:"#anfahrt", icon:"🗺️" },
+  ];
+
+  // Social-Icons – DEINE echten Links
+  const SOCIAL = [
+    { kind:"instagram", url:"https://www.instagram.com/christmas.avenue/", emoji:"📸" },
+    { kind:"facebook",  url:"https://www.facebook.com/christmasavenue",   emoji:"f"  },
+    { kind:"website",   url:"https://christmas-avenue.berlin/",           emoji:"🌐" },
+  ];
+
+  /* ===== RENDER ===== */
+  // Brand
+  document.getElementById("brandText").textContent = BRAND.text;
+  document.querySelector(".brand .logo").textContent = BRAND.logo;
+
+  // Links
+  const linkBar = document.getElementById("linkBar");
+  LINKS.forEach(l=>{
+    const a = document.createElement("a");
+    a.className = "link";
+    a.href = l.url;
+    a.target = l.url.startsWith("http") ? "_blank" : "_self";
+    a.rel = "noopener";
+    a.innerHTML = `${l.icon?`<span>${l.icon}</span>`:""}<span>${l.label}</span>`;
+    if(l.active) a.classList.add("active");
+    linkBar.appendChild(a);
+  });
+
+  // Social
+  const socialBar = document.getElementById("socialBar");
+  SOCIAL.forEach(s=>{
+    const a = document.createElement("a");
+    a.className = "iconbtn";
+    a.href = s.url;
+    a.target = "_blank";
+    a.rel = "noopener";
+    a.title = s.kind;
+    // einfache Emojis; auf Wunsch tausche ich gegen echte SVG-Logos
+    a.textContent = s.emoji;
+    socialBar.appendChild(a);
+  });
+
+  /* ===== DARK MODE (optional Umschalter) ===== */
+  const modeBtn = document.getElementById("modeBtn");
+  function applyInitialMode(){
+    const saved = localStorage.getItem("nav_mode");
+    if(saved){
+      document.body.classList.toggle("dark", saved==="dark");
+    }else if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches){
+      document.body.classList.add("dark");
+    }
+    modeBtn.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+  }
+  modeBtn.addEventListener("click", ()=>{
+    document.body.classList.toggle("dark");
+    const dark = document.body.classList.contains("dark");
+    localStorage.setItem("nav_mode", dark ? "dark":"light");
+    modeBtn.textContent = dark ? "☀️" : "🌙";
+  });
+  applyInitialMode();
+</script>
+</body>
+</html>
